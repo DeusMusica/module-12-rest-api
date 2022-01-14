@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProductAPI.Models
 {
-    public class Product
+    public class RelatedProduct
     {
         [Key]
         [Required]
@@ -25,9 +25,5 @@ namespace ProductAPI.Models
         [Required]
         [Display(Name = "department")]
         public string Department { get; set; }
-
-        [Required]
-        [Display(Name = "relatedProducts")]
-        public virtual List<RelatedProduct> RelatedProducts { get; set; }
     }
 }

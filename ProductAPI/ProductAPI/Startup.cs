@@ -28,8 +28,8 @@ namespace ProductAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddDbContext<ProductContext>(opt =>opt.UseInMemoryDatabase("Products"));
-            services.AddApiVersioning(opt => opt.ReportApiVersions = true);
+            services.AddDbContext<ProductContext>(opt => opt.UseLazyLoadingProxies().UseInMemoryDatabase("Products"));
+            services.AddApiVersioning(opt => opt.ReportApiVersions = true);            
             services.AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo
             {
                 Title = "Products",
@@ -42,8 +42,7 @@ namespace ProductAPI
         public void Configure(IApplicationBuilder app)
         {
             app.UseSwagger();
-            app.UseSwaggerUI(opt => opt.SwaggerEndpoint("/swagger/v1/swagger.json", "Products v1"));
-
+            app.UseSwaggerUI(opt => opt.SwaggerEndpoint("/swagger/v1/swagger.json", "Products v1"));            
             app.UseRouting();
 
             app.UseAuthorization();
