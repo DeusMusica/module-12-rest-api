@@ -50,6 +50,7 @@ namespace ProductAPI.Controllers
         {
             try
             {
+
                 _context.Products.Add(product);
                 _context.SaveChanges();
 
@@ -157,6 +158,7 @@ namespace ProductAPI.Controllers
                 product.Name = newProduct.Name ?? product.Name;
                 product.Price = newProduct.Price ?? product.Price;
                 product.RelatedProducts = newProduct.RelatedProducts ?? product.RelatedProducts;
+                product.LastModified = DateTime.Now;
 
                 _context.Products.Update(product);
                 _context.SaveChanges();
@@ -221,6 +223,31 @@ namespace ProductAPI.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("OldProductCleanup")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public ActionResult DeleteProduct()
+        {
+            try
+            {
+                DateTime tooOld = DateTime.Now.AddDays(7);
+                var productList = _context.Products as IQueryable<Product>;
+                var product = productList.Where(p => p.LastModified < tooOld).ToList();
+                foreach (var item in product)
+                {
+                    _context.Products.Remove(item);
+                }
+                _context.SaveChanges();
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                // Typically an error log is produced here
+                return ValidationProblem(e.Message);
+            }
+        }
     }
 }
 

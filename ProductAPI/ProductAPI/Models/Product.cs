@@ -33,5 +33,12 @@ namespace ProductAPI.Models
         [Required]
         [Display(Name = "relatedReviews")]
         public virtual List<Review> RelatedReviews { get; set; }
+
+        [Display(Name = "lastModified")]
+        public virtual DateTime LastModified { get; set; }
+        public Product()
+        {
+            LastModified = DateTime.Now;
+        }
     }
 }
