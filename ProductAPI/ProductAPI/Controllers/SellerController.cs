@@ -25,15 +25,8 @@ namespace ProductAPI.Controllers
             //ProductSeed.InitData(seller);
         }
 
-        //public SellerController()
-        //{
-        //_sellerDao = sellerdao;
-
-        //if (_context.Products.Any()) return;
-
-
-        //}
-        [HttpPost]
+       
+    [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<Seller> PostSeller([FromBody] Seller seller)
@@ -44,7 +37,7 @@ namespace ProductAPI.Controllers
                 _sellerDao.Sellers.Add(seller);
                 _sellerDao.SaveChanges();
 
-                return new CreatedResult($"/seller/{seller.Id.ToLower()}", seller);
+                return new CreatedResult($"/seller/{seller.SellerId.ToLower()}", seller);
             }
             catch (Exception e)
             {
@@ -65,7 +58,7 @@ namespace ProductAPI.Controllers
                 result = result.Where(p => p.SellerName.Equals(seller, StringComparison.InvariantCultureIgnoreCase));
             }
 
-            return Ok(result.OrderBy(p => p.Id).Take(15));
+            return Ok(result.OrderBy(p => p.SellerId).Take(15));
         }
 
 
@@ -74,27 +67,28 @@ namespace ProductAPI.Controllers
         //[ProducesResponseType(StatusCodes.Status201Created)]
         //[ProducesResponseType(StatusCodes.Status400BadRequest)]
 
-        //[HttpDelete]
-        //[Route("{productNumber}")]
-        //[ProducesResponseType(StatusCodes.Status201Created)]
-        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-        //public ActionResult<Product> DeleteProduct([FromRoute] string productNumber)
-        //{
-        //    try
-        //    {
-        //        var productList = _context.Products as IQueryable<Product>;
-        //        var product = productList.First(p => p.ProductNumber.Equals(productNumber));
+        [HttpDelete]
+        [Route("")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public ActionResult<Seller> DeleteSeller([FromRoute] string sellerId)
+        {
+            try
+            {
+                var sellerList = _sellerDao.Sellers as IQueryable<Seller>;
+                var seller = sellerList.First(p => p.SellerId.Equals(sellerId));
 
-        //        _context.Products.Remove(product);
-        //        _context.SaveChanges();
+                _sellerDao.Sellers.Remove(seller);
+                _sellerDao.SaveChanges();
 
-        //        return new CreatedResult($"/products/{product.ProductNumber.ToLower()}", product);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        // Typically an error log is produced here
-        //        return ValidationProblem(e.Message);
-        //    }
-        //}
+                return Ok();
+                //return new CreatedResult($"/seller/{seller.SellerId.ToLower()}", seller);
+            }
+            catch (Exception e)
+            {
+                // Typically an error log is produced here
+                return ValidationProblem(e.Message);
+            }
+        }
     }
 }

@@ -11,7 +11,7 @@ namespace ProductAPI.Models
         [Key]
         [Required]
         [Display(Name = "Seller ID")]
-        public string Id { get; set; }
+        public string SellerId { get; set; }
 
         [Required]
         [Display(Name = "Seller's Name")]

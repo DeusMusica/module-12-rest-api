@@ -171,6 +171,7 @@ namespace ProductAPI.Controllers
                 return ValidationProblem(e.Message);
             }
         }
+
         [HttpPatch]
         [Route("{productNumber}/RelatedProduct")]
         [ProducesResponseType(StatusCodes.Status201Created)]
