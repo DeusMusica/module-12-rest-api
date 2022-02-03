@@ -94,7 +94,7 @@ namespace ProductAPI.Controllers
         //}
 
         [HttpDelete]
-        [Route("")]
+        [Route("{SellerId}")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<Seller> DeleteSeller([FromRoute] string sellerId)
