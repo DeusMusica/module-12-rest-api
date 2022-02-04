@@ -14,5 +14,6 @@ namespace ProductAPI.Daos
         }
 
         public DbSet<Product> Products { get; set; }
+        public DbSet<Seller> Sellers { get; set; }
     }
 }

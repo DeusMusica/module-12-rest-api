@@ -15,18 +15,19 @@ namespace ProductAPI.Controllers
     [Produces("application/json")]
     public class SellerController : ControllerBase
     {
-        private readonly SellerDao _sellerDao;
+        private readonly ProductContext _sellerDao;
 
-        public SellerController(SellerDao sellerDao)
+        public SellerController(ProductContext context)
         {
-            _sellerDao = sellerDao;
+            _sellerDao = context;
 
-            if (_sellerDao.Sellers.Any()) return;
-            //ProductSeed.InitData(seller);
+            if (_sellerDao.Products.Any()) return;
+
+            ProductSeed.InitData(context);
         }
 
-       
-    [HttpPost]
+
+        [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<Seller> PostSeller([FromBody] Seller seller)
@@ -37,7 +38,7 @@ namespace ProductAPI.Controllers
                 _sellerDao.Sellers.Add(seller);
                 _sellerDao.SaveChanges();
 
-                return new CreatedResult($"/seller/{seller.SellerId.ToLower()}", seller);
+                return new CreatedResult($"/sellers/{seller.SellerId.ToLower()}", seller);
             }
             catch (Exception e)
             {
@@ -61,40 +62,42 @@ namespace ProductAPI.Controllers
             return Ok(result.OrderBy(p => p.SellerId).Take(15));
         }
 
-
-        //[HttpPatch]
-        //[Route("{Id}")]
-        //[ProducesResponseType(StatusCodes.Status201Created)]
-        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
+        //getting error need to test
+        [HttpPatch]
+        [Route("{sellerId}")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         //copy over PatchProduct information and add seller info so you can change seller info
-        //public ActionResult<Product> PatchProduct([FromRoute] string productNumber, [FromBody] ProductPatch newProduct)
-        //{
-        //    try
-        //    {
-        //        var productList = _context.Products as IQueryable<Product>;
-        //        var product = productList.First(p => p.ProductNumber.Equals(productNumber));
+        public ActionResult<Seller> UpdateSeller([FromRoute] string sellerId, [FromBody] SellerPatch newSeller, [FromRoute] string inventoryId )
+        {
+            try
+            {
+                var sellerList = _sellerDao.Sellers as IQueryable<Seller>;
+                var seller = sellerList.First(p => p.SellerId.Equals(sellerId));
+                var inventorystuff = seller.ProductsSold.First(p => p.InventoryId.Equals(inventoryId));
+                //trying to get stock changing, may need new model, trying to get numbersold to reduce numberheld
+                seller.SellerName = newSeller.SellerName ?? seller.SellerName;
+                seller.ProductsSold = newSeller.ProductsSold ?? seller.ProductsSold;
+                inventorystuff.NumberSold += 1;
+                inventorystuff.NumberHeld -= 1;
+                //Don't need stock since we have inventoryitem class
+                //seller.Stock = newSeller.Stock ?? seller.Stock;                    
+                
+               
+                _sellerDao.Sellers.Update(seller);
+                _sellerDao.SaveChanges();
 
-        //        product.ProductNumber = newProduct.ProductNumber ?? product.ProductNumber;
-        //        product.Department = newProduct.Department ?? product.Department;
-        //        product.Name = newProduct.Name ?? product.Name;
-        //        product.Price = newProduct.Price ?? product.Price;
-        //        product.RelatedProducts = newProduct.RelatedProducts ?? product.RelatedProducts;
-        //        product.LastModified = DateTime.Now;
-
-        //        _context.Products.Update(product);
-        //        _context.SaveChanges();
-
-        //        return new CreatedResult($"/products/{product.ProductNumber.ToLower()}", product);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        // Typically an error log is produced here
-        //        return ValidationProblem(e.Message);
-        //    }
-        //}
+                return new CreatedResult($"/sellers/{seller.SellerId.ToLower()}", seller);
+            }
+            catch (Exception e)
+            {
+                // Typically an error log is produced here
+                return ValidationProblem(e.Message);
+            }
+        }
 
         [HttpDelete]
-        [Route("{SellerId}")]
+        [Route("{sellerId}")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<Seller> DeleteSeller([FromRoute] string sellerId)
@@ -108,7 +111,7 @@ namespace ProductAPI.Controllers
                 _sellerDao.SaveChanges();
 
                 return Ok();
-                //return new CreatedResult($"/seller/{seller.SellerId.ToLower()}", seller);
+                //return new CreatedResult($"/sellers/{seller.SellerId.ToLower()}", seller);
             }
             catch (Exception e)
             {

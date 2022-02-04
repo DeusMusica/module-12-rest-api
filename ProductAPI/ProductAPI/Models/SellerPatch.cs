@@ -6,23 +6,19 @@ using System.Threading.Tasks;
 
 namespace ProductAPI.Models
 {
-    public class Seller
+    public class SellerPatch
     {
-        [Key]
-        [Required]
+        [Key]        
         [Display(Name = "Seller ID")]
         public string SellerId { get; set; }
 
-        [Required]
         [Display(Name = "Seller's Name")]
         public string SellerName { get; set; }
 
         [Display(Name = "Products Sold")]
         public virtual List<InventoryItem> ProductsSold { get; set; }
 
-        //[Display(Name = "Available Stock")]
-        //public int Stock { get; set; }
-
-
+    //    [Display(Name = "Available Stock")]
+    //    public int? Stock { get; set; }
     }
 }
